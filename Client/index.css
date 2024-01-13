@@ -63,3 +63,18 @@ label {
 .btn-submit:active {
     background-color: #11aa22;
 }
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.todos {
+    display: flex;
+    flex-direction: column;
+    background-color: bisque;
+}
+
+.todo-box {
+    min-width: 250px;
+    min-height: 250px;
+}
