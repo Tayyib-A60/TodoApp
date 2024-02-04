@@ -20,10 +20,9 @@ namespace Server.Controllers
         public TodoController(ILogger<TodoController> logger)
         {
             _logger = logger;
-            // _todos = new List<TodoEntity>();
         }
 
-        [HttpPost]
+        [HttpPost("create")]
         public IActionResult CreateTodo([FromBody] TodoDTO todoDTO) 
         {
             var  newTodoItem = new TodoEntity
@@ -31,7 +30,8 @@ namespace Server.Controllers
                 ID = Guid.NewGuid(),
                 Title = todoDTO.title, 
                 Description = todoDTO.description, 
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             _todos.Add(newTodoItem);
@@ -39,13 +39,26 @@ namespace Server.Controllers
             return Ok(newTodoItem);
         }
 
-        [HttpGet]
+        [HttpPut("update")]
+        public IActionResult UpdateTodo([FromBody] UpdateTodoDTO updateTodoDTO)
+        {
+
+            var updatedTodo = UpdateTodoEntity(updateTodoDTO);
+
+            if(updatedTodo is null) {
+                return NotFound($"Todo with id {updateTodoDTO.id} not found");
+            }
+
+            return Ok(updatedTodo);
+        }
+
+        [HttpGet("list")]
         public IActionResult GetTodos()
         {
             return Ok(_todos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get_by_id/{id}")]
         public IActionResult GetTodo(string id)
         {
             var todo = FindTodo(id);
@@ -57,10 +70,47 @@ namespace Server.Controllers
             return Ok(todo);
         }
 
+        [HttpDelete("delete/{id}")]
+        public IActionResult DeleteTodo(string id)
+        {
+            var todoDeleted = DeleteTodoEntity(id);
+
+            if(!todoDeleted) {
+                return NotFound($"Todo with id {id} not found");
+            }
+
+            return Ok(id);
+        }
+
         private TodoEntity FindTodo(string id) 
         {
             var todo = _todos.FirstOrDefault(t => t.ID.ToString() == id);
             return todo;
+        }
+
+        private TodoEntity UpdateTodoEntity(UpdateTodoDTO updateTodoDTO)
+        {
+            var todo = _todos.FirstOrDefault(t => t.ID.ToString() == updateTodoDTO.id);
+
+            if(todo is not null) {
+                todo.Title = updateTodoDTO.title;
+                todo.Description = updateTodoDTO.description;
+                todo.UpdatedAt = DateTime.UtcNow;
+            }
+
+            return todo;
+        }
+
+        private bool DeleteTodoEntity(string id)
+        {
+            var todoToDelete = _todos.FirstOrDefault(t => t.ID.ToString() == id);
+
+            if(todoToDelete is not null) {
+                _todos.Remove(todoToDelete);
+                return true;
+            }
+
+            return false;
         }
     }
 }

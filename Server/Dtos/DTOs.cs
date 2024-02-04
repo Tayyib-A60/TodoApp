@@ -11,6 +11,7 @@ namespace Server.Dtos
     }
 
     public record TodoDTO(string title, string description);
+    public record UpdateTodoDTO(string id, string title, string description);
 
     public class TodoEntity
     {
@@ -18,6 +19,7 @@ namespace Server.Dtos
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
     }
     
 }

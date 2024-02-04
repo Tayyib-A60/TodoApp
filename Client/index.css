@@ -75,6 +75,29 @@ label {
 }
 
 .todo-box {
-    min-width: 250px;
+    min-width: 300px;
     min-height: 250px;
+}
+
+ol {
+    list-style-type: none;
+}
+
+li {
+    /* border: 1px solid cyan; */
+    background-color: brown;
+    margin: 0 40px 4px 0;
+    padding: 10px 8px;
+    /* TRBL */
+}
+
+p {
+    color: #ea9d03;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+span {
+    color: #9e8551;
+    margin-right: 40px;
 }
