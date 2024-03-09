@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Server.Data;
+using Server.Data.Entities;
 using Server.Dtos;
 
 namespace Server.Controllers
@@ -15,11 +17,12 @@ namespace Server.Controllers
     public class TodoController : ControllerBase
     {
         private readonly ILogger<TodoController> _logger;
-        private static IList<TodoEntity> _todos = new List<TodoEntity>();
+        private readonly TodoRepository _todoRepo;
 
         public TodoController(ILogger<TodoController> logger)
         {
             _logger = logger;
+            _todoRepo = new TodoRepository();
         }
 
         [HttpPost("create")]
@@ -34,7 +37,7 @@ namespace Server.Controllers
                 UpdatedAt = DateTime.UtcNow
             };
 
-            _todos.Add(newTodoItem);
+            _todoRepo.CreateTodo(newTodoItem);
 
             return Ok(newTodoItem);
         }
@@ -55,7 +58,8 @@ namespace Server.Controllers
         [HttpGet("list")]
         public IActionResult GetTodos()
         {
-            return Ok(_todos);
+            var todos = _todoRepo.ListTodos();
+            return Ok(todos);
         }
 
         [HttpGet("get_by_id/{id}")]
@@ -82,31 +86,34 @@ namespace Server.Controllers
             return Ok(id);
         }
 
-        private TodoEntity FindTodo(string id) 
+        private TodoEntity? FindTodo(string id) 
         {
-            var todo = _todos.FirstOrDefault(t => t.ID.ToString() == id);
+            var todo = _todoRepo.GetTodoById(id);
             return todo;
         }
 
-        private TodoEntity UpdateTodoEntity(UpdateTodoDTO updateTodoDTO)
+        private TodoEntity? UpdateTodoEntity(UpdateTodoDTO updateTodoDTO)
         {
-            var todo = _todos.FirstOrDefault(t => t.ID.ToString() == updateTodoDTO.id);
+            var todo = _todoRepo.GetTodoById(updateTodoDTO.id);
 
             if(todo is not null) {
                 todo.Title = updateTodoDTO.title;
                 todo.Description = updateTodoDTO.description;
                 todo.UpdatedAt = DateTime.UtcNow;
+                
+                _todoRepo.UpdateTodo(todo);
+
+                return todo;
             }
 
-            return todo;
+            return null;
         }
 
         private bool DeleteTodoEntity(string id)
         {
-            var todoToDelete = _todos.FirstOrDefault(t => t.ID.ToString() == id);
+            var todoId = _todoRepo.DeleteTodo(id);
 
-            if(todoToDelete is not null) {
-                _todos.Remove(todoToDelete);
+            if(!String.IsNullOrEmpty(todoId)) {
                 return true;
             }
 
