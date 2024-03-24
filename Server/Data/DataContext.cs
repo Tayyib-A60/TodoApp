@@ -11,8 +11,9 @@ namespace Server.Data
     public class DataContext: DbContext
     {
         public DbSet<TodoEntity> Todos { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=localhost;Username=postgres;Password=postgres;Database=TodoAppDb");
+        => optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Username=user;Password=postgres;Database=TodoAppDb");
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Server.Data;
+using Server.Data.Implementations;
+using Server.Data.Interfaces;
 
 class Program
 {
@@ -17,6 +19,10 @@ class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+        // builder.Services.AddSingleton<ITodoRepository, TodoRepository>();
+        builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        // builder.Services.AddTransient<ITodoRepository, TodoRepository>();
 
         var app = builder.Build();
 

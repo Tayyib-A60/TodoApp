@@ -14,41 +14,32 @@ namespace Server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TodoController : ControllerBase
+    public class TodoCopyController : ControllerBase
     {
         private readonly ILogger<TodoController> _logger;
         private readonly ITodoRepository _todoRepo;
-        private readonly IUserRepository _userRepo;
 
-        public TodoController(ILogger<TodoController> logger, ITodoRepository todoRepo, IUserRepository userRepo)
+        public TodoCopyController(ILogger<TodoController> logger, ITodoRepository todoRepo)
         {
             _logger = logger;
             _todoRepo = todoRepo;
-            _userRepo = userRepo;
         }
 
         [HttpPost("create")]
         public IActionResult CreateTodo([FromBody] TodoDTO todoDTO) 
         {
-            var user = _userRepo.GetUserById(todoDTO.userId);
+            var  newTodoItem = new TodoEntity
+            {
+                ID = Guid.NewGuid(),
+                Title = todoDTO.title, 
+                Description = todoDTO.description, 
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
 
-            if(user is not null) {
-                var  newTodoItem = new TodoEntity
-                {
-                    ID = Guid.NewGuid(),
-                    UserID = Guid.Parse(todoDTO.userId),
-                    Title = todoDTO.title, 
-                    Description = todoDTO.description, 
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+            _todoRepo.CreateTodo(newTodoItem);
 
-                _todoRepo.CreateTodo(newTodoItem);
-
-                return Ok(newTodoItem);
-            }
-
-            return NotFound($"User with id {todoDTO.userId} not found");
+            return Ok(newTodoItem);
         }
 
         [HttpPut("update")]

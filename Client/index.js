@@ -9,11 +9,11 @@ async function saveTodo() {
     if(isUpdate) {
         await updateTodo();
     } else {
-        createTodo();
+        await createTodo();
     }
 }
 
-const createTodo = () => {
+const createTodo = async () => {
     let todo = {
         title: '',
         description: ''
@@ -43,30 +43,20 @@ const createTodo = () => {
     
 
     if(todo.title) {
-        const todosQueryResult = document.querySelectorAll('.todo-list');
 
-        if(todosQueryResult.length) {
-            var newTodoItem = document.createElement('li');
-
-            var todoItemTitle = document.createElement('p');
-            todoItemTitle.innerHTML = todo.title;
-            
-            newTodoItem.appendChild(todoItemTitle);
-
-            var todoItemDescription = document.createElement('span');
-            todoItemDescription.innerHTML = todo.description;
-            
-            newTodoItem.appendChild(todoItemDescription);
-
-            var editButton = document.createElement('button');
-            editButton.innerHTML = 'Edit';
-
-            editButton.addEventListener('click', () => editTodoItem(newTodoItem));
-
-            newTodoItem.appendChild(editButton);
-
-            todosQueryResult[0].appendChild(newTodoItem);
-            todoList.push(todo);
+        try 
+        {
+            const createResponse = await fetch(`${baseURL}/todo/create`, {
+                method: 'POST',
+                body: JSON.stringify(todo),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const responseBody = await createResponse.json();
+            await listTodos();
+        } catch (error) {
+            console.error(error);
         }
     }
 };

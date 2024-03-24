@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Server.Data.Entities;
+using Server.Data.Interfaces;
 
-namespace Server.Data
+namespace Server.Data.Implementations
 {
-    public class TodoRepository
+    public class TodoRepository : ITodoRepository
     {
         private readonly DataContext _dataContext;
         public TodoRepository()
@@ -36,7 +37,8 @@ namespace Server.Data
         {
             var todoToDelete = _dataContext.Todos.FirstOrDefault(todo => todo.ID.ToString() == id);
 
-            if(todoToDelete is not null) {
+            if (todoToDelete is not null)
+            {
                 _dataContext.Todos.Remove(todoToDelete);
                 _dataContext.SaveChanges();
                 return id;

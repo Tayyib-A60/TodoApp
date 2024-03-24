@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Data;
@@ -11,9 +12,11 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240324111825_todo-user")]
+    partial class todouser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,15 +44,12 @@ namespace Server.Migrations
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid?>("UserEntityID")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("UserID")
                         .HasColumnType("uuid");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("UserEntityID");
+                    b.HasIndex("UserID");
 
                     b.ToTable("Todos");
                 });
@@ -81,14 +81,13 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Data.Entities.TodoEntity", b =>
                 {
-                    b.HasOne("Server.Data.Entities.UserEntity", null)
-                        .WithMany("Todos")
-                        .HasForeignKey("UserEntityID");
-                });
+                    b.HasOne("Server.Data.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-            modelBuilder.Entity("Server.Data.Entities.UserEntity", b =>
-                {
-                    b.Navigation("Todos");
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

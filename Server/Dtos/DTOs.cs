@@ -10,7 +10,8 @@ namespace Server.Dtos
         
     }
 
-    public record TodoDTO(string title, string description);
+    public record UserDTO(string email, string password);
+    public record TodoDTO(string title, string description, string userId);
     public record UpdateTodoDTO(string id, string title, string description);
     
 }
